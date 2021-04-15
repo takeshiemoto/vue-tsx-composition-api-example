@@ -1,0 +1,99 @@
+{
+  "version": 2,
+  "cli": {
+    "defaultCollection": "@nrwl/next"
+  },
+  "defaultProject": "simple-form",
+  "generators": {
+    "@nrwl/react": {
+      "application": {
+        "babel": true
+      }
+    },
+    "@nrwl/next": {
+      "application": {
+        "style": "styled-components",
+        "linter": "eslint"
+      }
+    }
+  },
+  "projects": {
+    "simple-form": {
+      "root": "apps/simple-form",
+      "sourceRoot": "apps/simple-form",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/next:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "root": "apps/simple-form",
+            "outputPath": "dist/apps/simple-form"
+          },
+          "configurations": {
+            "production": {}
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/next:server",
+          "options": {
+            "buildTarget": "simple-form:build",
+            "dev": true
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "simple-form:build:production",
+              "dev": false
+            }
+          }
+        },
+        "export": {
+          "executor": "@nrwl/next:export",
+          "options": {
+            "buildTarget": "simple-form:build:production"
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/simple-form"],
+          "options": {
+            "jestConfig": "apps/simple-form/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/simple-form/**/*.{ts,tsx,js,jsx}"]
+          }
+        }
+      }
+    },
+    "simple-form-e2e": {
+      "root": "apps/simple-form-e2e",
+      "sourceRoot": "apps/simple-form-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/simple-form-e2e/cypress.json",
+            "tsConfig": "apps/simple-form-e2e/tsconfig.e2e.json",
+            "devServerTarget": "simple-form:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "simple-form:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/simple-form-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    }
+  }
+}
