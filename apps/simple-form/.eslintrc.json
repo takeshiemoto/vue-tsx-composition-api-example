@@ -1,13 +1,17 @@
 {
   "extends": ["plugin:@nrwl/nx/react", "../../.eslintrc.json"],
   "ignorePatterns": ["!**/*"],
+  "plugins": ["simple-import-sort"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "parserOptions": {
         "project": ["apps/simple-form/tsconfig(.*)?.json"]
       },
-      "rules": {}
+      "rules": {
+        "simple-import-sort/imports": "error",
+        "simple-import-sort/exports": "error"
+      }
     },
     {
       "files": ["*.ts", "*.tsx"],
