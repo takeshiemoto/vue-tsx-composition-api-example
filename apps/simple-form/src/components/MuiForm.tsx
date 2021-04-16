@@ -5,33 +5,56 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
+  MenuItem,
   Radio,
   RadioGroup,
+  Select,
   TextField,
 } from '@material-ui/core';
 import React, { VFC } from 'react';
 import { Controller, NestedValue, useForm } from 'react-hook-form';
 
 const GENDER = {
-  MALE: 1,
-  female: 2,
+  MALE: 'MALE',
+  FEMALE: 'FEMALE',
 } as const;
+type Gender = typeof GENDER[keyof typeof GENDER];
 
-const ROLES = ['OWNER', 'ADMIN', 'USER'] as const;
-type Role = typeof ROLES[number];
+const ROLES = {
+  ADMIN: 'ADMIN',
+  STAFF: 'STAFF',
+  GUEST: 'GUEST',
+} as const;
+type Role = typeof ROLES[keyof typeof ROLES];
+
+const AREAS = [
+  '北海道',
+  '東北',
+  '関東',
+  '北陸',
+  '中部',
+  '近畿',
+  '中国',
+  '四国',
+  '九州',
+  '沖縄',
+] as const;
+type Area = typeof AREAS[number];
+
 type MUIFormInputs = {
   name: string;
-  gender: string;
+  gender: Gender;
   roles: NestedValue<Role[]>;
+  area?: Area;
 };
 
 export const MUIForm: VFC = () => {
   const { control, handleSubmit, getValues } = useForm<MUIFormInputs>({
-    defaultValues: { name: '', gender: '', roles: [] },
+    defaultValues: { name: '', roles: [], gender: GENDER.MALE, area: '北海道' },
   });
   const onValid = (data: MUIFormInputs) => console.log(data);
 
-  const getNewRoles = (checkedRole: Role) => {
+  const handleCheck = (checkedRole: Role): Role[] => {
     return getValues().roles.includes(checkedRole)
       ? getValues().roles.filter((role) => role !== checkedRole)
       : [...getValues().roles, checkedRole];
@@ -40,7 +63,7 @@ export const MUIForm: VFC = () => {
   return (
     <Box py={2}>
       <form onSubmit={handleSubmit(onValid)}>
-        <Box py={2}>
+        <Box pt={2}>
           <Controller
             control={control}
             render={({ field }) => (
@@ -55,19 +78,19 @@ export const MUIForm: VFC = () => {
             name={'name'}
           />
         </Box>
-        <Box>
+        <Box pt={2}>
           <Controller
             render={({ field }) => (
               <FormControl>
                 <FormLabel>性別</FormLabel>
                 <RadioGroup row {...field}>
                   <FormControlLabel
-                    value={'female'}
+                    value={GENDER.MALE}
                     control={<Radio />}
                     label={'男性'}
                   />
                   <FormControlLabel
-                    value={'male'}
+                    value={GENDER.FEMALE}
                     control={<Radio />}
                     label={'女性'}
                   />
@@ -79,7 +102,7 @@ export const MUIForm: VFC = () => {
           />
         </Box>
         <Box>
-          {ROLES.map((role) => (
+          {Object.values(ROLES).map((role) => (
             <FormControlLabel
               label={role}
               key={role}
@@ -90,7 +113,7 @@ export const MUIForm: VFC = () => {
                   render={({ field }) => (
                     <Checkbox
                       checked={field.value.includes(role)}
-                      onChange={() => field.onChange(getNewRoles(role))}
+                      onChange={() => field.onChange(handleCheck(role))}
                     />
                   )}
                 />
@@ -98,7 +121,25 @@ export const MUIForm: VFC = () => {
             />
           ))}
         </Box>
-        <Box mt={2}>
+        <Box pt={2}>
+          <FormControl>
+            <FormLabel>出身地域</FormLabel>
+            <Controller
+              name={'area'}
+              control={control}
+              render={({ field }) => (
+                <Select {...field} variant={'outlined'} size={'small'}>
+                  {AREAS.map((area) => (
+                    <MenuItem key={area} value={area}>
+                      {area}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+            />
+          </FormControl>
+        </Box>
+        <Box pt={2}>
           <Button type={'submit'} color={'primary'} variant={'contained'}>
             Submit
           </Button>
