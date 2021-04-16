@@ -22,14 +22,21 @@ type Role = typeof ROLES[number];
 type MUIFormInputs = {
   name: string;
   gender: string;
-  role: NestedValue<Role[]>;
+  roles: NestedValue<Role[]>;
 };
 
 export const MUIForm: VFC = () => {
-  const { control, handleSubmit } = useForm<MUIFormInputs>({
-    defaultValues: { name: '', gender: '', role: [] },
+  const { control, handleSubmit, getValues } = useForm<MUIFormInputs>({
+    defaultValues: { name: '', gender: '', roles: [] },
   });
   const onValid = (data: MUIFormInputs) => console.log(data);
+
+  const getNewRoles = (checkedRole: Role) => {
+    return getValues().roles.includes(checkedRole)
+      ? getValues().roles.filter((role) => role !== checkedRole)
+      : [...getValues().roles, checkedRole];
+  };
+
   return (
     <Box py={2}>
       <form onSubmit={handleSubmit(onValid)}>
@@ -72,22 +79,18 @@ export const MUIForm: VFC = () => {
           />
         </Box>
         <Box>
-          {ROLES.map((r) => (
+          {ROLES.map((role) => (
             <FormControlLabel
-              label={r}
-              key={r}
+              label={role}
+              key={role}
               control={
                 <Controller
-                  name={'role'}
+                  name={'roles'}
                   control={control}
-                  render={({ field: { onChange, value } }) => (
+                  render={({ field }) => (
                     <Checkbox
-                      checked={value.includes(r)}
-                      onChange={(e) =>
-                        e.target.checked
-                          ? onChange([...value, r])
-                          : onChange(value.filter((v) => v !== r))
-                      }
+                      checked={field.value.includes(role)}
+                      onChange={() => field.onChange(getNewRoles(role))}
                     />
                   )}
                 />
