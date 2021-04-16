@@ -12,7 +12,9 @@ import {
   TextField,
 } from '@material-ui/core';
 import React, { VFC } from 'react';
-import { Controller, NestedValue, useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { array, mixed, object, string } from 'yup';
 
 const GENDER = {
   MALE: 'MALE',
@@ -44,13 +46,21 @@ type Area = typeof AREAS[number];
 type MUIFormInputs = {
   name: string;
   gender: Gender;
-  roles: NestedValue<Role[]>;
-  area?: Area;
+  roles: Role[];
+  area: Area;
 };
+
+const schema = object().shape({
+  name: string().required(),
+  gender: mixed().oneOf([...Object.keys(GENDER)]),
+  roles: array<Role[]>(),
+  area: mixed().oneOf([...AREAS]),
+});
 
 export const MUIForm: VFC = () => {
   const { control, handleSubmit, getValues } = useForm<MUIFormInputs>({
     defaultValues: { name: '', roles: [], gender: GENDER.MALE, area: '北海道' },
+    resolver: yupResolver(schema),
   });
   const onValid = (data: MUIFormInputs) => console.log(data);
 
